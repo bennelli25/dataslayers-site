@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Data Slayers turns messy data into clear scores and answers: ACES scoring, mechanics analysis, custom reports and data cleanup. Slay your data dragons!">
+<meta property="og:title" content="Data Slayers">
+<meta property="og:description" content="Slay your data dragons! ACES scoring, mechanics analysis, and custom data breakdowns.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<!-- /site-head -->
+<title>Data Slayers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Grenze+Gotisch:wght@600..800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: heraldic crest meets chart plate. One ~1120px column; split hero (thesis | sword cutting noise into signal), armory grid led by a wide ACES card, 2x2 bestiary of data problems, 3-step quest, deep contact band. */
+:root{
+  --bg:#f4f5f9;
+  --surface:#ffffff;
+  --ink:#121931;
+  --muted:#525b77;
+  --line:#d8dde9;
+  --azure:#1d3787;
+  --gules:#c03a1f;
+  --on-gules:#ffffff;
+  --or:#946806;
+  --on-or:#ffffff;
+  --plate:#121931;
+  --plate-ink:#e8ecf7;
+  --plate-grid:#283152;
+  --plate-noise:#8a94b3;
+  --signal:#f0b93a;
+  --steel:#cfd5e6;
+  --band:#1d3787;
+  --band-ink:#f4f6fc;
+  --band-muted:#c6d0f2;
+  --band-panel:#162c6e;
+  --band-line:#3d57a8;
+  --mark-lens:#1d3787;
+  --mark-brow:#c03a1f;
+  --mark-iris:#e3a51c;
+  --mark-rim:#a8740a;
+  --mark-pupil:#0b1020;
+  --mark-glint:#ffffff;
+  --shadow:rgb(18 25 49 / .35);
+  --font-display:"Grenze Gotisch","Old English Text MT",Georgia,serif;
+  --font-sans:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1020; --surface:#131a2e; --ink:#ecf0f9; --muted:#a3abc5; --line:#252e4b;
+    --azure:#a3b5ff; --gules:#ff6e4d; --on-gules:#1b0904; --or:#f0b93a; --on-or:#1b1404;
+    --plate:#060914; --plate-ink:#e8ecf7; --plate-grid:#1c2440; --plate-noise:#7c86a7; --signal:#f0b93a; --steel:#cfd5e6;
+    --band:#131a2e; --band-ink:#ecf0f9; --band-muted:#a3abc5; --band-panel:#0b1020; --band-line:#2c3657;
+    --mark-lens:#a3b5ff; --mark-brow:#ff6e4d; --mark-iris:#f0b93a; --mark-rim:#b9850f; --shadow:rgb(0 0 0 / .55);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1020; --surface:#131a2e; --ink:#ecf0f9; --muted:#a3abc5; --line:#252e4b;
+  --azure:#a3b5ff; --gules:#ff6e4d; --on-gules:#1b0904; --or:#f0b93a; --on-or:#1b1404;
+  --plate:#060914; --plate-ink:#e8ecf7; --plate-grid:#1c2440; --plate-noise:#7c86a7; --signal:#f0b93a; --steel:#cfd5e6;
+  --band:#131a2e; --band-ink:#ecf0f9; --band-muted:#a3abc5; --band-panel:#0b1020; --band-line:#2c3657;
+  --mark-lens:#a3b5ff; --mark-brow:#ff6e4d; --mark-iris:#f0b93a; --mark-rim:#b9850f; --shadow:rgb(0 0 0 / .55);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+img,svg{max-width:100%}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offset:3px;border-radius:4px}
+
+.wrap{width:100%;max-width:1180px;margin-inline:auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+@media (min-width:640px){.wrap{padding-left:max(28px, env(safe-area-inset-left, 0px));padding-right:max(28px, env(safe-area-inset-right, 0px))}}
+
+.skip{position:absolute;left:-9999px;top:0;background:var(--surface);color:var(--ink);padding:10px 14px;z-index:50}
+.skip:focus{left:16px;top:16px}
+
+/* Mark */
+.m-brow{fill:var(--mark-brow)}
+.m-lens{fill:var(--mark-lens)}
+.m-iris{fill:var(--mark-iris)}
+.m-rim{fill:none;stroke:var(--mark-rim);stroke-width:1.4}
+.m-pupil{fill:var(--mark-pupil)}
+.m-glint{fill:var(--mark-glint)}
+
+/* Header */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand svg{width:48px;height:31px;flex:none}
+.brand-name{font-family:var(--font-display);font-weight:800;font-size:1.65rem;line-height:1;letter-spacing:.005em}
+.nav{display:flex;align-items:center;gap:28px}
+.nav-links{display:flex;gap:24px;list-style:none;margin:0;padding:0}
+.nav-links a{color:var(--muted);text-decoration:none;font-weight:560;font-size:.95rem}
+.nav-links a:hover{color:var(--ink)}
+@media (max-width:780px){.nav-links{display:none}}
+
+/* Buttons: a blade cut on two corners */
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:680;font-size:1rem;line-height:1;padding:15px 22px;border:0;cursor:pointer;text-decoration:none;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);transition:transform .15s ease,filter .15s ease}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:focus-visible{outline:2px solid currentColor;outline-offset:-6px;border-radius:0}
+.btn-primary{background:var(--gules);color:var(--on-gules)}
+.btn-sm{padding:11px 16px;font-size:.92rem}
+.text-link{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--gules);text-decoration-thickness:2px;text-underline-offset:6px}
+.text-link:hover{text-decoration-color:var(--ink)}
+
+.eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--or);font-weight:600;margin:0}
+
+/* Hero */
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px;align-items:center;padding-block:76px 88px}
+.hero h1{font-family:var(--font-display);font-weight:800;font-size:clamp(3.1rem,8vw,5.6rem);line-height:.95;margin:.22em 0 .32em;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--gules)}
+.lede{font-size:1.2rem;line-height:1.55;color:var(--muted);max-width:50ch;margin:0 0 34px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:24px;align-items:center}
+@media (max-width:880px){.hero .wrap{grid-template-columns:minmax(0,1fr);gap:44px;padding-block:52px 64px}}
+
+.plate{margin:0;background:var(--plate);color:var(--plate-ink);border-radius:var(--radius);padding:22px 22px 16px;box-shadow:0 28px 56px -28px var(--shadow)}
+.plate svg{display:block;width:100%;height:auto}
+.plate figcaption{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;font-family:var(--font-mono);font-size:.74rem;letter-spacing:.04em;color:var(--plate-noise)}
+.p-grid line{stroke:var(--plate-grid);stroke-width:1}
+.p-axis{stroke:var(--plate-noise);stroke-width:1}
+.p-lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;fill:var(--plate-noise)}
+.p-lbl-signal{fill:var(--signal);font-weight:600}
+.p-noise{fill:none;stroke:var(--plate-noise);stroke-width:2;stroke-linejoin:miter;stroke-miterlimit:10}
+.p-signal{fill:none;stroke:var(--signal);stroke-width:3.5;stroke-linecap:round}
+.p-dot{fill:var(--signal);transform-box:fill-box;transform-origin:center}
+.p-blade{fill:var(--steel)}
+.p-fuller{stroke:var(--plate-noise);stroke-width:1.5}
+.p-guard,.p-pommel{fill:var(--signal)}
+.p-grip{fill:var(--gules)}
+@media (prefers-reduced-motion:no-preference){
+  .p-sword{animation:strike .5s cubic-bezier(.2,.9,.3,1.15) .15s both}
+  .p-signal{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s ease-out .55s forwards}
+  .p-dot{animation:pop .3s ease-out 1.45s both}
+}
+@keyframes strike{from{transform:translateY(-44px)}to{transform:translateY(0)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* Sections */
+.section{padding-block:92px;scroll-margin-top:64px}
+.section-alt{background:var(--surface);border-block:1px solid var(--line)}
+.section-head{max-width:660px;margin-bottom:48px;display:grid;gap:12px}
+.section-head h2{font-stretch:118%;font-weight:780;font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.08;letter-spacing:-.015em;margin:0;text-wrap:balance}
+.section-head p{margin:0;color:var(--muted);font-size:1.08rem;max-width:58ch}
+@media (max-width:640px){.section{padding-block:64px}}
+
+/* Armory */
+.armory{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.weapon{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.weapon h3{font-stretch:112%;font-weight:740;font-size:1.32rem;line-height:1.2;margin:0}
+.weapon p{margin:0;color:var(--muted)}
+.weapon ul{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:8px;font-size:.96rem}
+.weapon li{display:flex;gap:12px;align-items:baseline}
+.weapon li::before{content:"";flex:none;width:11px;height:2px;background:var(--gules);transform:translateY(-4px) rotate(-35deg)}
+.weapon .text-link{margin-top:auto;padding-top:10px;align-self:flex-start}
+.weapon-feature{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:center;border:2px solid var(--azure);padding:36px}
+.weapon-feature .feature-copy{display:flex;flex-direction:column;gap:12px;min-width:0}
+.weapon-feature h3{font-size:clamp(1.7rem,3vw,2.2rem)}
+.weapon .formula{font-family:var(--font-mono);font-size:.92rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:4px 0 0}
+.stats{display:flex;flex-wrap:wrap;gap:12px 36px;margin:10px 0 0}
+.stats div{display:grid;gap:2px}
+.stats dt{order:2;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stats dd{order:1;margin:0;font-stretch:115%;font-weight:780;font-size:1.75rem;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.weapon .credit{font-size:.86rem}
+
+/* ACES box plot */
+.bp{margin:0;display:grid;gap:8px;justify-items:center;min-width:0}
+.bp svg{width:100%;max-width:340px;height:auto;display:block}
+.bp figcaption{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.04em;color:var(--muted);text-align:center}
+.bp-grid line{stroke:var(--line);stroke-width:1}
+.bp-tick{font-family:var(--font-mono);font-size:11px;fill:var(--muted)}
+.bp-dot{fill:var(--azure);stroke:var(--surface);stroke-width:2}
+.bp-box{fill:var(--bg);stroke:var(--azure);stroke-width:2}
+.bp-whisker{stroke:var(--azure);stroke-width:2}
+.bp-median{stroke:var(--gules);stroke-width:3}
+.bp-out{fill:var(--surface);stroke:var(--azure);stroke-width:2}
+.bp-lead{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3}
+.bp-name{font-family:var(--font-sans);font-size:12.5px;fill:var(--muted)}
+.bp-val{font-family:var(--font-mono);font-size:13px;font-weight:600;fill:var(--ink)}
+.bp-note{font-family:var(--font-sans);font-size:11.5px;fill:var(--muted)}
+.weapon .bp-sum{margin:0;font-family:var(--font-mono);font-size:.95rem;font-variant-numeric:tabular-nums}
+.bp-sum b{color:var(--ink);font-size:1.25rem}
+@media (max-width:860px){
+  .armory{grid-template-columns:minmax(0,1fr)}
+  .weapon-feature{grid-template-columns:minmax(0,1fr);padding:24px;gap:32px}
+  .bp{justify-items:start}
+  .bp figcaption{text-align:left}
+}
+
+/* Bestiary */
+.bestiary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px}
+.beast{border-top:1px solid var(--line);padding-block:28px 32px;display:grid;gap:8px;align-content:start;min-width:0}
+.beast h3{font-family:var(--font-display);font-weight:700;font-size:2rem;line-height:1.05;margin:0}
+.beast p{margin:0;color:var(--muted);max-width:52ch}
+.slain-by{margin-top:6px !important;font-family:var(--font-mono);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.slain-by a{color:var(--gules);font-weight:600;text-underline-offset:4px}
+@media (max-width:720px){.bestiary{grid-template-columns:minmax(0,1fr)}}
+
+/* Quest */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;list-style:none;margin:0;padding:0}
+.step{display:grid;gap:10px;align-content:start;min-width:0}
+.step-num{display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-weight:600;font-size:.8rem;letter-spacing:.1em;color:var(--gules)}
+.step-num::after{content:"";flex:1;height:1px;background:var(--line)}
+.step h3{font-stretch:112%;font-weight:740;font-size:1.35rem;margin:0}
+.step p{margin:0;color:var(--muted)}
+@media (max-width:820px){.steps{grid-template-columns:minmax(0,1fr);gap:28px}}
+
+/* Contact band */
+.contact{background:var(--band);color:var(--band-ink);border-block:1px solid var(--line);scroll-margin-top:64px}
+.contact .wrap{padding-block:84px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;align-items:center}
+.contact h2{font-family:var(--font-display);font-weight:800;font-size:clamp(2.7rem,6vw,4.2rem);line-height:1;margin:0 0 14px}
+.contact p{color:var(--band-muted);margin:0;font-size:1.12rem;max-width:46ch}
+.email-box{background:var(--band-panel);border:1px solid var(--band-line);border-radius:var(--radius);padding:26px;display:grid;gap:14px;min-width:0}
+.email-label{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--band-muted)}
+.email-addr{font-family:var(--font-mono);font-size:clamp(1.05rem,2.4vw,1.35rem);font-weight:600;color:var(--band-ink);overflow-wrap:anywhere;user-select:all}
+.email-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.copy-btn{font:inherit;font-size:.92rem;font-weight:600;color:var(--band-ink);background:transparent;border:1px solid var(--band-line);border-radius:6px;padding:10px 14px;cursor:pointer}
+.copy-btn:hover{border-color:var(--band-ink)}
+.copy-status{font-size:.88rem;color:var(--band-muted);min-height:1.2em}
+@media (max-width:820px){.contact .wrap{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:64px}}
+
+/* Footer */
+.site-footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 24px;padding-block:28px;color:var(--muted);font-size:.9rem}
+.site-footer .brand svg{width:34px;height:22px}
+.site-footer .brand-name{font-size:1.25rem}
+.foot-left{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.motto{font-style:italic}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs><clipPath id="ds-eye"><path d="M2 40 Q30 10 62 30 Q36 64 2 40 Z"/></clipPath></defs>
+  <symbol id="ds-mark" viewBox="1 11 62 40">
+    <path class="m-brow" d="M3 32 Q28 2 61 19 L62 24 Q30 10 8 36 Z"/>
+    <path class="m-lens" d="M2 40 Q30 10 62 30 Q36 64 2 40 Z"/>
+    <g clip-path="url(#ds-eye)">
+      <circle class="m-iris" cx="32" cy="35" r="13"/>
+      <circle class="m-rim" cx="32" cy="35" r="12.3"/>
+    </g>
+    <path class="m-pupil" d="M32 22.5 Q37.8 35 32 47.5 Q26.2 35 32 22.5 Z"/>
+    <circle class="m-glint" cx="37" cy="29.5" r="2.3"/>
+  </symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Data Slayers home">
+      <svg aria-hidden="true"><use href="#ds-mark"/></svg>
+      <span class="brand-name">Data Slayers</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#dragons">Dragons</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a class="btn btn-primary btn-sm" href="#contact">Get a quote</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Sports data analysis · Scoring · Mechanics</p>
+        <h1>Slay your data <em>dragons!</em></h1>
+        <p class="lede">Scores scattered across league sites, rankings that only count the top shooters, slumps nobody can explain. Data Slayers turns the numbers you already have into fair scores and plain answers you can act on.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#contact">Get a quote</a>
+          <a class="text-link" href="#services">See what we offer</a>
+        </div>
+      </div>
+
+      <figure class="plate">
+        <svg viewBox="0 0 480 300" role="img" aria-labelledby="plate-title">
+          <title id="plate-title">A jagged, noisy line on the left is cut by a sword. To the right of the cut it becomes a smooth rising trend.</title>
+          <g class="p-grid">
+            <line x1="24" y1="60" x2="456" y2="60"/>
+            <line x1="24" y1="120" x2="456" y2="120"/>
+            <line x1="24" y1="180" x2="456" y2="180"/>
+            <line x1="24" y1="240" x2="456" y2="240"/>
+          </g>
+          <line class="p-axis" x1="24" y1="270" x2="456" y2="270"/>
+          <text class="p-lbl" x="24" y="40">NOISE</text>
+          <text class="p-lbl p-lbl-signal" x="456" y="40" text-anchor="end">SIGNAL</text>
+          <polyline class="p-noise" points="24,196 36,150 48,226 60,132 72,208 84,166 96,244 108,140 120,200 132,112 144,232 156,158 168,214 180,128 192,198 204,150 216,206 228,176 232,186"/>
+          <path class="p-signal" pathLength="1" d="M246 186 C290 184 318 168 352 140 S420 72 456 58"/>
+          <circle class="p-dot" cx="456" cy="58" r="5"/>
+          <g transform="translate(240 214) rotate(-10)">
+            <g class="p-sword">
+              <path class="p-blade" d="M0 0 L-6 -16 L-6 -118 L6 -118 L6 -16 Z"/>
+              <line class="p-fuller" x1="0" y1="-24" x2="0" y2="-112"/>
+              <rect class="p-guard" x="-24" y="-128" width="48" height="10" rx="3"/>
+              <rect class="p-grip" x="-5" y="-156" width="10" height="28" rx="2"/>
+              <circle class="p-pommel" cx="0" cy="-164" r="7"/>
+            </g>
+          </g>
+          <text class="p-lbl" x="24" y="292">BEFORE</text>
+          <text class="p-lbl" x="456" y="292" text-anchor="end">AFTER</text>
+        </svg>
+        <figcaption><span>Fig. 1 · Same data, after the slaying</span><span>dataslayers.com</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The armory</p>
+        <h2>Pick your weapon</h2>
+        <p>Every job starts with your question. These are the tools we bring to it.</p>
+      </div>
+
+      <div class="armory">
+        <article class="weapon weapon-feature" id="aces">
+          <div class="feature-copy">
+            <p class="eyebrow">Signature service</p>
+            <h3>ACES Score</h3>
+            <p>Whole-team rankings for youth trap and skeet. Most team scores add up the top few shooters, which rewards two stars and a weak bench. The ACES Score uses the whole spread of a team's 50-target scores.</p>
+            <p class="formula">ACES = Median + Q3 + Q1 + Lower whisker + Max</p>
+            <ul>
+              <li>Four of the five parts measure the middle and bottom of the team</li>
+              <li>Each part tops out at 50, so a perfect team scores 250</li>
+              <li>A team of 8 and a team of 80 compare fairly</li>
+            </ul>
+            <dl class="stats">
+              <div><dt>Trap teams ranked</dt><dd>1,426</dd></div>
+              <div><dt>States</dt><dd>27</dd></div>
+              <div><dt>Scores</dt><dd>29,336</dd></div>
+            </dl>
+            <p class="credit">High School Clay Target League and SCTP results, November 2026. The ACES Score was created by the Aitkin County Elite Sharpshooters, a youth team in central Minnesota.</p>
+            <a class="text-link" href="https://rankings.aitkinaces.org/" target="_blank" rel="noopener">See the live rankings</a>
+          </div>
+          <figure class="bp">
+            <svg viewBox="0 0 340 290" role="img" aria-labelledby="bp-title">
+              <title id="bp-title">Box plot of an example team's 17 scores: max 50, Q3 47, median 45, Q1 40, lower whisker 29.5, for an ACES Score of 211.5 out of 250.</title>
+              <g class="bp-grid">
+                <line x1="34" y1="30" x2="176" y2="30"/>
+                <line x1="34" y1="80" x2="176" y2="80"/>
+                <line x1="34" y1="130" x2="176" y2="130"/>
+                <line x1="34" y1="180" x2="176" y2="180"/>
+                <line x1="34" y1="230" x2="176" y2="230"/>
+                <line x1="34" y1="280" x2="176" y2="280"/>
+              </g>
+              <g class="bp-tick" text-anchor="end">
+                <text x="26" y="34">50</text>
+                <text x="26" y="84">45</text>
+                <text x="26" y="134">40</text>
+                <text x="26" y="184">35</text>
+                <text x="26" y="234">30</text>
+                <text x="26" y="284">25</text>
+              </g>
+              <g>
+                <circle class="bp-dot" cx="78" cy="30" r="4.5"><title>Shooter: 50</title></circle>
+                <circle class="bp-dot" cx="78" cy="40" r="4.5"><title>Shooter: 49</title></circle>
+                <circle class="bp-dot" cx="71" cy="50" r="4.5"><title>Shooter: 48</title></circle>
+                <circle class="bp-dot" cx="85" cy="50" r="4.5"><title>Shooter: 48</title></circle>
+                <circle class="bp-dot" cx="71" cy="60" r="4.5"><title>Shooter: 47</title></circle>
+                <circle class="bp-dot" cx="85" cy="60" r="4.5"><title>Shooter: 47</title></circle>
+                <circle class="bp-dot" cx="78" cy="70" r="4.5"><title>Shooter: 46</title></circle>
+                <circle class="bp-dot" cx="71" cy="80" r="4.5"><title>Shooter: 45</title></circle>
+                <circle class="bp-dot" cx="85" cy="80" r="4.5"><title>Shooter: 45</title></circle>
+                <circle class="bp-dot" cx="78" cy="90" r="4.5"><title>Shooter: 44</title></circle>
+                <circle class="bp-dot" cx="78" cy="100" r="4.5"><title>Shooter: 43</title></circle>
+                <circle class="bp-dot" cx="78" cy="120" r="4.5"><title>Shooter: 41</title></circle>
+                <circle class="bp-dot" cx="78" cy="130" r="4.5"><title>Shooter: 40</title></circle>
+                <circle class="bp-dot" cx="78" cy="150" r="4.5"><title>Shooter: 38</title></circle>
+                <circle class="bp-dot" cx="78" cy="170" r="4.5"><title>Shooter: 36</title></circle>
+                <circle class="bp-dot" cx="78" cy="200" r="4.5"><title>Shooter: 33</title></circle>
+                <circle class="bp-dot" cx="78" cy="260" r="4.5"><title>Shooter: 27</title></circle>
+              </g>
+              <line class="bp-whisker" x1="143" y1="30" x2="143" y2="60"/>
+              <line class="bp-whisker" x1="143" y1="130" x2="143" y2="235"/>
+              <line class="bp-whisker" x1="131" y1="30" x2="155" y2="30"/>
+              <line class="bp-whisker" x1="131" y1="235" x2="155" y2="235"/>
+              <rect class="bp-box" x="118" y="60" width="50" height="70" rx="3"/>
+              <line class="bp-median" x1="118" y1="80" x2="168" y2="80"/>
+              <circle class="bp-out" cx="143" cy="260" r="4.5"><title>27, below the lower whisker</title></circle>
+              <line class="bp-lead" x1="160" y1="30" x2="194" y2="30"/>
+              <line class="bp-lead" x1="172" y1="60" x2="194" y2="60"/>
+              <line class="bp-lead" x1="172" y1="80" x2="194" y2="80"/>
+              <line class="bp-lead" x1="172" y1="130" x2="194" y2="130"/>
+              <line class="bp-lead" x1="160" y1="235" x2="194" y2="235"/>
+              <line class="bp-lead" x1="151" y1="260" x2="194" y2="260"/>
+              <text x="200" y="34"><tspan class="bp-name">Max</tspan><tspan class="bp-val" dx="8">50</tspan></text>
+              <text x="200" y="64"><tspan class="bp-name">Q3</tspan><tspan class="bp-val" dx="8">47</tspan></text>
+              <text x="200" y="84"><tspan class="bp-name">Median</tspan><tspan class="bp-val" dx="8">45</tspan></text>
+              <text x="200" y="134"><tspan class="bp-name">Q1</tspan><tspan class="bp-val" dx="8">40</tspan></text>
+              <text x="200" y="239"><tspan class="bp-name">Lower whisker</tspan><tspan class="bp-val" dx="8">29.5</tspan></text>
+              <text class="bp-note" x="200" y="264">27 · below the whisker</text>
+            </svg>
+            <figcaption>Example team · 17 shooters' 50-target scores</figcaption>
+            <p class="bp-sum">45 + 47 + 40 + 29.5 + 50 = <b>211.5</b> of 250</p>
+          </figure>
+        </article>
+
+        <article class="weapon" id="mechanics">
+          <h3>Mechanics Analysis</h3>
+          <p>A phase-by-phase breakdown of an athlete's form. We find where points are being lost and show what to fix first.</p>
+          <ul>
+            <li>Phase-by-phase breakdown</li>
+            <li>Where points are being lost</li>
+            <li>Fixes ranked by impact</li>
+          </ul>
+          <a class="text-link" href="#contact">Book an analysis</a>
+        </article>
+
+        <article class="weapon" id="league">
+          <h3>League Design &amp; Simulation</h3>
+          <p>Fair virtual leagues built on real scores. We seed conferences, balance schedules and simulate whole seasons before the first target flies.</p>
+          <ul>
+            <li>Conferences seeded by ACES Score</li>
+            <li>Balanced schedules, so no seed gets an easier path</li>
+            <li>A sandbag check that flags honest teams less than 1% of the time</li>
+          </ul>
+          <a class="text-link" href="#contact">Plan a league</a>
+        </article>
+
+        <article class="weapon" id="reports">
+          <h3>Custom Reports &amp; Archives</h3>
+          <p>Rankings pages, dashboards and score archives built around your questions. We collect results from public league sites and keep a permanent copy.</p>
+          <ul>
+            <li>Scores gathered from public results</li>
+            <li>A season-by-season archive</li>
+            <li>Pages that update every week</li>
+          </ul>
+          <a class="text-link" href="#contact">Start a report</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dragons">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Bestiary</p>
+        <h2>Know your dragon</h2>
+        <p>Every data problem has a shape. Find yours and see what slays it.</p>
+      </div>
+
+      <div class="bestiary">
+        <article class="beast">
+          <h3>The Top-Heavy Wyvern</h3>
+          <p>Team rankings that only count the top few shooters. Two stars and a weak bench pass for a powerhouse.</p>
+          <p class="slain-by">Slain by <a href="#aces">ACES Score</a></p>
+        </article>
+        <article class="beast">
+          <h3>The Sandbag Wyrm</h3>
+          <p>Shoots low in the seeding weeks to land in a soft conference, then runs away with it.</p>
+          <p class="slain-by">Slain by <a href="#league">League Design</a></p>
+        </article>
+        <article class="beast">
+          <h3>The Spreadsheet Hydra</h3>
+          <p>Scores spread across league sites and spreadsheets. Cut one tab and two grow back, and old seasons vanish when a league clears its site.</p>
+          <p class="slain-by">Slain by <a href="#reports">Custom Reports</a></p>
+        </article>
+        <article class="beast">
+          <h3>The Shadow Drake</h3>
+          <p>Scores slip and nobody can see why. The flaw hides in the details of how the athlete moves.</p>
+          <p class="slain-by">Slain by <a href="#mechanics">Mechanics Analysis</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The quest</p>
+        <h2>How it works</h2>
+        <p>Three steps from a pile of numbers to a decision you can defend.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">STEP 1</span>
+          <h3>Scout</h3>
+          <p>Tell us what you're up against. Send the question and whatever scores or data you have, in whatever shape they're in.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">STEP 2</span>
+          <h3>Strike</h3>
+          <p>We clean it, analyze it and score it. You hear from us along the way, so nothing happens in a black box.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">STEP 3</span>
+          <h3>Claim the hoard</h3>
+          <p>You get a clear report: the score, what drives it, and what to do next. We walk you through it.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <div>
+        <h2>Got a dragon?</h2>
+        <p>Tell us what you're fighting. We'll reply with how we'd slay it and what it costs.</p>
+      </div>
+      <div class="email-box">
+        <span class="email-label">Email</span>
+        <span class="email-addr" id="email-addr">hello@dataslayers.com</span>
+        <div class="email-actions">
+          <a class="btn btn-primary btn-sm" href="mailto:hello@dataslayers.com?subject=I%20have%20a%20data%20dragon">Email us</a>
+          <button class="copy-btn" id="copy-email" type="button">Copy address</button>
+          <span class="copy-status" id="copy-status" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-left">
+      <a class="brand" href="#top" aria-label="Data Slayers home">
+        <svg aria-hidden="true"><use href="#ds-mark"/></svg>
+        <span class="brand-name">Data Slayers</span>
+      </a>
+      <span class="motto">Slay your data dragons!</span>
+    </div>
+    <span>© 2026 Data Slayers · dataslayers.com</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var btn = document.getElementById('copy-email');
+  var addr = document.getElementById('email-addr');
+  var status = document.getElementById('copy-status');
+  if (!btn || !addr || !status) return;
+  var timer;
+  function say(msg){ status.textContent = msg; clearTimeout(timer); timer = setTimeout(function(){ status.textContent = ''; }, 2500); }
+  function selectAddr(){
+    var range = document.createRange();
+    range.selectNodeContents(addr);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    say('Address selected, ready to copy');
+  }
+  btn.addEventListener('click', function(){
+    var text = addr.textContent.trim();
+    try {
+      navigator.clipboard.writeText(text).then(function(){ say('Copied'); }, selectAddr);
+    } catch (e) { selectAddr(); }
+  });
+})();
+</script>
+</body>
+</html>
