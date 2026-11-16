@@ -39,7 +39,7 @@ Once GitHub shows the domain as working (repository Settings > Pages), tick **En
 
 ## Still to do
 
-- [ ] Mechanics Analysis copy is still general ("a phase-by-phase breakdown of an athlete's form"). Make it say what you actually analyze.
+- [ ] The AceMotion card copies its one-sentence description, sport list and prices from AceMotion's `llms.txt` (Nov 2026). Keep them in step when AceMotion changes. Its stick figure is the softball swing at contact from AceMotion's `motion.js` demo, labeled as made-up data.
 - [ ] ACES stats (1,426 trap teams, 27 states, 29,336 scores) are a snapshot of the ACES rankings data from 2026-11-12. Update them now and then.
 - [ ] Check the credit line ("created by the Aitkin County Elite Sharpshooters") describes the ACES / Data Slayers relationship the way you want.
 - [ ] Set up the `hello@dataslayers.com` mailbox (or email forwarding), or change the address in `index.html`.

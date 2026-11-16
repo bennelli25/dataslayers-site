@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Data Slayers turns messy data into clear scores and answers: ACES scoring, mechanics analysis, custom reports and data cleanup. Slay your data dragons!">
+<meta name="description" content="Data Slayers, of Aitkin, Minnesota, makes AceMotion, frame-by-frame mechanics breakdowns from phone video for youth sports, and the ACES Score whole-team rankings for youth trap and skeet. Slay your data dragons!">
 <meta property="og:title" content="Data Slayers">
-<meta property="og:description" content="Slay your data dragons! ACES scoring, mechanics analysis, and custom data breakdowns.">
+<meta property="og:description" content="Slay your data dragons! Makers of AceMotion and the ACES Score.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <!-- /site-head -->
 <title>Data Slayers</title>
@@ -44,6 +44,7 @@
   --mark-pupil:#0b1020;
   --mark-glint:#ffffff;
   --shadow:rgb(18 25 49 / .35);
+  --ball:#d8f03c;
   --font-display:"Grenze Gotisch","Old English Text MT",Georgia,serif;
   --font-sans:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
@@ -100,7 +101,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
 .nav-links{display:flex;gap:24px;list-style:none;margin:0;padding:0}
 .nav-links a{color:var(--muted);text-decoration:none;font-weight:560;font-size:.95rem}
 .nav-links a:hover{color:var(--ink)}
-@media (max-width:780px){.nav-links{display:none}}
+@media (max-width:900px){.nav-links{display:none}}
 
 /* Buttons: a blade cut on two corners */
 .btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:680;font-size:1rem;line-height:1;padding:15px 22px;border:0;cursor:pointer;text-decoration:none;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);transition:transform .15s ease,filter .15s ease}
@@ -153,7 +154,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
 @media (max-width:640px){.section{padding-block:64px}}
 
 /* Armory */
-.armory{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.armory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 .weapon{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .weapon h3{font-stretch:112%;font-weight:740;font-size:1.32rem;line-height:1.2;margin:0}
 .weapon p{margin:0;color:var(--muted)}
@@ -170,6 +171,35 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
 .stats dt{order:2;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .stats dd{order:1;margin:0;font-stretch:115%;font-weight:780;font-size:1.75rem;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
 .weapon .credit{font-size:.86rem}
+.feature-links{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:auto;padding-top:10px}
+.feature-links .text-link{margin:0;padding:0}
+
+/* AceMotion card */
+.am-logo{width:30px;height:30px;vertical-align:-5px;margin-right:10px}
+.weapon .promise{color:var(--ink);font-weight:600}
+.sports-label{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-top:6px !important}
+.weapon .sports{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.weapon .sports li{display:inline-block;font-size:.82rem;line-height:1.2;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink)}
+.weapon .sports li::before{content:none}
+.weapon .plans{font-family:var(--font-mono);font-size:.84rem;color:var(--ink)}
+.am-plate{margin:0;background:var(--plate);color:var(--plate-ink);border-radius:var(--radius);padding:18px 18px 14px;display:grid;gap:10px;min-width:0;box-shadow:0 22px 44px -26px var(--shadow)}
+.am-plate svg{display:block;width:100%;max-width:320px;height:auto;margin-inline:auto}
+.am-top,.am-read{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-family:var(--font-mono);font-size:.76rem;letter-spacing:.04em}
+.am-top{color:var(--plate-noise)}
+.am-top span:last-child{color:var(--signal)}
+.am-read{border-top:1px solid var(--plate-grid);padding-top:10px;align-items:baseline}
+.am-read b{font-size:1.1rem;color:var(--signal)}
+.am-ok{color:var(--plate-noise)}
+.am-plate figcaption{font-family:var(--font-mono);font-size:.7rem;color:var(--plate-noise)}
+.am-floor{stroke:var(--plate-grid);stroke-width:1.2}
+.am-bone{stroke:var(--plate-ink);stroke-width:2.4;stroke-linecap:round}
+.am-bone.far{stroke:var(--plate-noise)}
+.am-head{fill:var(--plate-ink)}
+.am-bat{stroke:var(--steel);stroke-width:2.6;stroke-linecap:round}
+.am-ball{fill:var(--ball)}
+.am-arc{fill:none;stroke:var(--signal);stroke-width:1.6}
+.am-joint{fill:var(--signal)}
+.am-ang{font-family:var(--font-mono);font-size:6.5px;font-weight:600;fill:var(--signal)}
 
 /* ACES box plot */
 .bp{margin:0;display:grid;gap:8px;justify-items:center;min-width:0}
@@ -261,6 +291,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
     <nav class="nav" aria-label="Main">
       <ul class="nav-links">
         <li><a href="#services">Services</a></li>
+        <li><a href="#acemotion">AceMotion</a></li>
         <li><a href="#dragons">Dragons</a></li>
         <li><a href="#how">How it works</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -324,9 +355,64 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
       </div>
 
       <div class="armory">
+        <article class="weapon weapon-feature" id="acemotion">
+          <div class="feature-copy">
+            <p class="eyebrow">Mechanics analysis app</p>
+            <h3><svg class="am-logo" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#D8F03C"/><path d="M7 6.5c4 4.5 4 14.5 0 19M25 6.5c-4 4.5-4 14.5 0 19" fill="none" stroke="#CF2A3E" stroke-width="2" stroke-linecap="round"/></svg>AceMotion</h3>
+            <p>AceMotion turns phone video of a youth athlete into a frame-by-frame mechanics breakdown, a fix list with feel cues, and a practice plan.</p>
+            <p class="promise">Motion tracking runs in the browser on your own phone or computer. Videos never leave your device.</p>
+            <ul>
+              <li>Joint angles and timing at the key frames of each skill, graded against age-level ranges</li>
+              <li>One video of a whole practice station, split into reps automatically</li>
+              <li>Short AI coach summaries for athletes and parents, and team reports for coaches</li>
+            </ul>
+            <p class="sports-label">15 sports</p>
+            <ul class="sports">
+              <li>Softball</li><li>Baseball</li><li>Basketball</li><li>Volleyball</li><li>Football</li><li>Lacrosse</li><li>Tennis</li><li>Pickleball</li><li>Golf</li><li>Soccer</li><li>Track and field</li><li>Gymnastics</li><li>Cheer</li><li>Dance</li><li>Archery</li>
+            </ul>
+            <p class="plans">Individual $12.99 a month · Coach $24.99 a month · 7-day free trial</p>
+            <p class="credit">A coaching aid: measurements are estimates from a single camera. The newest sports are marked Beta while they are checked against real athletes.</p>
+            <div class="feature-links">
+              <a class="text-link" href="https://acemotion.app/?ref=dataslayers" target="_blank" rel="noopener">Try AceMotion</a>
+              <a class="text-link" href="https://acemotion.app/example.html?ref=dataslayers" target="_blank" rel="noopener">See an example breakdown</a>
+            </div>
+          </div>
+          <figure class="am-plate">
+            <div class="am-top"><span>Softball · Hitting</span><span>Key frame: Contact</span></div>
+            <svg viewBox="38 22 104 110" role="img" aria-labelledby="am-title">
+              <title id="am-title">Stick figure of a softball hitter at contact, with the front leg measured at 177 degrees.</title>
+              <line class="am-floor" x1="38" y1="128" x2="142" y2="128"/>
+              <line class="am-bone far" x1="75.2" y1="46.4" x2="73.5" y2="76.1"/>
+              <line class="am-bone far" x1="75.2" y1="46.4" x2="86" y2="59.5"/>
+              <line class="am-bone far" x1="86" y1="59.5" x2="98.7" y2="68.4"/>
+              <line class="am-bone far" x1="73.5" y1="76.1" x2="69.2" y2="100.7"/>
+              <line class="am-bone far" x1="69.2" y1="100.7" x2="50" y2="116.8"/>
+              <line class="am-bone far" x1="50" y1="116.8" x2="56.5" y2="120.3"/>
+              <line class="am-bone" x1="83.2" y1="46.4" x2="75.2" y2="46.4"/>
+              <line class="am-bone" x1="83.2" y1="46.4" x2="76.5" y2="76.1"/>
+              <line class="am-bone" x1="76.5" y1="76.1" x2="73.5" y2="76.1"/>
+              <line class="am-bone" x1="83.2" y1="46.4" x2="80.6" y2="63.2"/>
+              <line class="am-bone" x1="80.6" y1="63.2" x2="95.2" y2="68.4"/>
+              <line class="am-bone" x1="76.5" y1="76.1" x2="84.2" y2="99.9"/>
+              <line class="am-bone" x1="84.2" y1="99.9" x2="90.7" y2="124"/>
+              <line class="am-bone" x1="90.7" y1="124" x2="97.2" y2="127.5"/>
+              <circle class="am-head" cx="83.1" cy="36.5" r="6.5"/>
+              <line class="am-bat" x1="96.9" y1="68.4" x2="128.9" y2="68.4"/>
+              <circle class="am-ball" cx="128.9" cy="68.4" r="4.5"/>
+              <path class="am-arc" d="M81.43 91.33 A9 9 0 0 0 86.54 108.59"/>
+              <circle class="am-joint" cx="76.5" cy="76.1" r="2"/>
+              <circle class="am-joint" cx="84.2" cy="99.9" r="2.2"/>
+              <circle class="am-joint" cx="90.7" cy="124" r="2"/>
+              <text class="am-ang" x="91" y="102.5">177°</text>
+            </svg>
+            <div class="am-read"><span>Front leg at contact</span><b>177°</b><span class="am-ok">Good: 150° and up</span></div>
+            <figcaption>Example pose from AceMotion's own demo · made-up data</figcaption>
+          </figure>
+        </article>
+
         <article class="weapon weapon-feature" id="aces">
           <div class="feature-copy">
-            <p class="eyebrow">Signature service</p>
+            <p class="eyebrow">Team rankings</p>
             <h3>ACES Score</h3>
             <p>Whole-team rankings for youth trap and skeet. Most team scores add up the top few shooters, which rewards two stars and a weak bench. The ACES Score uses the whole spread of a team's 50-target scores.</p>
             <p class="formula">ACES = Median + Q3 + Q1 + Lower whisker + Max</p>
@@ -406,17 +492,6 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
           </figure>
         </article>
 
-        <article class="weapon" id="mechanics">
-          <h3>Mechanics Analysis</h3>
-          <p>A phase-by-phase breakdown of an athlete's form. We find where points are being lost and show what to fix first.</p>
-          <ul>
-            <li>Phase-by-phase breakdown</li>
-            <li>Where points are being lost</li>
-            <li>Fixes ranked by impact</li>
-          </ul>
-          <a class="text-link" href="#contact">Book an analysis</a>
-        </article>
-
         <article class="weapon" id="league">
           <h3>League Design &amp; Simulation</h3>
           <p>Fair virtual leagues built on real scores. We seed conferences, balance schedules and simulate whole seasons before the first target flies.</p>
@@ -469,7 +544,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
         <article class="beast">
           <h3>The Shadow Drake</h3>
           <p>Scores slip and nobody can see why. The flaw hides in the details of how the athlete moves.</p>
-          <p class="slain-by">Slain by <a href="#mechanics">Mechanics Analysis</a></p>
+          <p class="slain-by">Slain by <a href="#acemotion">AceMotion</a></p>
         </article>
       </div>
     </div>
@@ -531,7 +606,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gules);outline-offs
       </a>
       <span class="motto">Slay your data dragons!</span>
     </div>
-    <span>© 2026 Data Slayers · dataslayers.com</span>
+    <span>Makers of AceMotion and the ACES Score · Aitkin, Minnesota · © 2026 Data Slayers</span>
   </div>
 </footer>
 
